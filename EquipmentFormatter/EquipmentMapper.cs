@@ -1,12 +1,31 @@
 ﻿namespace EquipmentFormatter
 {
-  public class EquipmentMapper
+  public static class EquipmentMapper
   {
-    public string ComputeLabel(Equipment equipment, Variation variation)
+    public static string ComputeLabel(Equipment equipment, Variation variation)
     {
       var label = equipment.Label.Trim();
 
-      // Totally new labels
+      var result = ComputeLabelTotallyNew(variation);
+      if (result != null) return result;
+
+      result = ComputeLabelWithReplacementBySchema(variation, label);
+      if (result != null) return result;
+
+      result = ComputeLabelWithReplacementByLocation(variation, label);
+      if (result != null) return result;
+
+      result = ComputeLabelWithDoubleReplacement(variation, label);
+      if (result != null) return result;
+
+      result = ComputeLabelWithComplementaryInfo(variation, label);
+      if (result != null) return result;
+
+      return label;
+    }
+
+    private static string ComputeLabelTotallyNew(Variation variation)
+    {
       if (variation.Schema == 7407)
         return "Nombre de cylindres";
 
@@ -16,7 +35,11 @@
       if (variation.Schema == 15305)
         return "Régime de puissance maxi (tr/mn)";
 
-      // Replacement of just a part of the label
+      return null;
+    }
+
+    private static string ComputeLabelWithReplacementBySchema(Variation variation, string label)
+    {
       if (variation.Schema == 23502 || variation.Schema == 24002)
         return label.Replace("an(s) / km", ": durée (ans)");
 
@@ -28,8 +51,11 @@
 
       if (variation.Schema == 7402)
         return label.Replace("litres / cm3", "cm3");
+      return null;
+    }
 
-      // Idem according to Location
+    private static string ComputeLabelWithReplacementByLocation(Variation variation, string label)
+    {
       if (variation.Schema == 23301)
       {
         if (variation.Location == 'F')
@@ -48,7 +74,11 @@
           return label.Replace("conducteur / passager", "passager");
       }
 
-      // Double replacement at once, one according to Schema, the other to Location
+      return null;
+    }
+
+    private static string ComputeLabelWithDoubleReplacement(Variation variation, string label)
+    {
       if (variation.Schema == 53405)
       {
         if (variation.Location == 'D')
@@ -76,15 +106,18 @@
           return label.Replace("recharge (rapide) A / V / h", "recharge rapide : durée (heures)");
       }
 
-      // Add complementary info
+      return null;
+    }
+
+    private static string ComputeLabelWithComplementaryInfo(Variation variation, string label)
+    {
       if (variation.Schema == 14103)
         return label + " : largeur";
 
       if (variation.Schema == 14104)
         return label + " : profil";
 
-      // Default label
-      return label;
+      return null;
     }
   }
 }
