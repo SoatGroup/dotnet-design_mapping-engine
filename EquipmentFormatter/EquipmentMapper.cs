@@ -1,162 +1,103 @@
-﻿﻿namespace EquipmentFormatter
+﻿﻿using System;
+ using System.Linq;
+
+ namespace EquipmentFormatter
 {
   public static class EquipmentMapper
   {
     public static string ComputeLabel(Equipment equipment, Variation variation)
     {
       var label = equipment.Label.Trim();
-
-      var result = TryComputeLabelTotallyNew(variation);
-      if (result.Success) return result.Value;
-
-      result = TryComputeLabelWithReplacementBySchema(variation, label);
-      if (result.Success) return result.Value;
-
-      result = TryComputeLabelWithReplacementByLocation(variation, label);
-      if (result.Success) return result.Value;
-
-      result = TryComputeLabelWithDoubleReplacement(variation, label);
-      if (result.Success) return result.Value;
-
-      result = TryComputeLabelWithComplementaryInfo(variation, label);
-      if (result.Success) return result.Value;
-
-      return label;
+      return new Func<string>[]
+             {
+               () => TryComputeLabelTotallyNew(variation),
+               () => TryComputeLabelWithReplacementBySchema(variation, label),
+               () => TryComputeLabelWithReplacementByLocation(variation, label),
+               () => TryComputeLabelForBattery(variation, label),
+               () => TryComputeLabelWithComplementaryInfo(variation, label),
+             }
+             .Select(tryCompute => tryCompute())
+             .DefaultIfEmpty(label)
+             .First(x => x != null);
     }
 
-    private static (bool Success, string Value) TryComputeLabelTotallyNew(Variation variation)
+    private static string TryComputeLabelTotallyNew(Variation variation) =>
+      variation.Schema switch
+      {
+        7407 => "Nombre de cylindres",
+        15304 => "Puissance (ch)",
+        15305 => "Régime de puissance maxi (tr/mn)",
+        _ => null,
+      };
+
+    private static string TryComputeLabelWithReplacementBySchema(Variation variation, string label)
     {
-      if (variation.Schema == 7407)
+      switch (variation.Schema)
       {
-        return (true, "Nombre de cylindres");
+        case 23502:
+        case 24002:
+          return label.Replace("an(s) / km", ": durée (ans)");
+        case 23503:
+        case 24003:
+          return label.Replace("an(s) / km", ": kilométrage");
+        case 7403:
+          return label.Replace("litres / cm3", "litres");
+        case 7402:
+          return label.Replace("litres / cm3", "cm3");
+        default:
+          return null;
       }
-
-      if (variation.Schema == 15304)
-      {
-        return (true, "Puissance (ch)");
-      }
-
-      if (variation.Schema == 15305)
-      {
-        return (true, "Régime de puissance maxi (tr/mn)");
-      }
-
-      return (false, null);
     }
 
-    private static (bool Success, string Result) TryComputeLabelWithReplacementBySchema(Variation variation, string label)
+    private static string TryComputeLabelWithReplacementByLocation(Variation variation, string label)
     {
-      if (variation.Schema == 23502 || variation.Schema == 24002)
+      switch (variation.Schema, variation.Location)
       {
-        return (true, label.Replace("an(s) / km", ": durée (ans)"));
-      }
+        case (23301, 'F'):
+          return label.Replace("AV / AR", "AV");
+        case (23301, 'R'):
+          return label.Replace("AV / AR", "AR");
 
-      if (variation.Schema == 23503 || variation.Schema == 24003)
-      {
-        return (true, label.Replace("an(s) / km", ": kilométrage"));
-      }
+        case (17811, 'D'):
+        case (17818, 'D'):
+          return label.Replace("conducteur / passager", "conducteur");
 
-      if (variation.Schema == 7403)
-      {
-        return (true, label.Replace("litres / cm3", "litres"));
-      }
+        case (17811, 'P'):
+        case (17818, 'P'):
+          return label.Replace("conducteur / passager", "passager");
 
-      if (variation.Schema == 7402)
-      {
-        return (true, label.Replace("litres / cm3", "cm3"));
+        default:
+          return null;
       }
-
-      return (false, null);
     }
 
-    private static (bool Success, string Result) TryComputeLabelWithReplacementByLocation(Variation variation, string label)
+    private static string TryComputeLabelForBattery(Variation variation, string label)
     {
-      if (variation.Schema == 23301)
+      var result = TryGetBatteryLabel(variation);
+      if (result == null)
       {
-        if (variation.Location == 'F')
-        {
-          return (true, label.Replace("AV / AR", "AV"));
-        }
-
-        if (variation.Location == 'R')
-        {
-          return (true, label.Replace("AV / AR", "AR"));
-        }
+        return null;
       }
 
-      if (variation.Schema == 17811 || variation.Schema == 17818)
-      {
-        if (variation.Location == 'D')
-        {
-          return (true, label.Replace("conducteur / passager", "conducteur"));
-        }
-
-        if (variation.Location == 'P')
-        {
-          return (true, label.Replace("conducteur / passager", "passager"));
-        }
-      }
-
-      return (false, null);
+      var rapide = variation.Location == 'F' ? " rapide" : "";
+      return label.Replace("recharge (rapide) A / V / h", $"recharge{rapide} : {result}");
     }
 
-    private static (bool Success, string Result) TryComputeLabelWithDoubleReplacement(Variation variation, string label)
-    {
-      if (variation.Schema == 53405)
+    private static string TryGetBatteryLabel(Variation variation) =>
+      variation.Schema switch
       {
-        if (variation.Location == 'D')
-        {
-          return (true, label.Replace("recharge (rapide) A / V / h", "recharge : ampérage (A)"));
-        }
+        53405 => "ampérage (A)",
+        53404 => "voltage (V)",
+        53403 => "durée (heures)",
+        _ => null,
+      };
 
-        if (variation.Location == 'F')
-        {
-          return (true, label.Replace("recharge (rapide) A / V / h", "recharge rapide : ampérage (A)"));
-        }
-      }
-
-      if (variation.Schema == 53404)
+    private static string TryComputeLabelWithComplementaryInfo(Variation variation, string label) =>
+      variation.Schema switch
       {
-        if (variation.Location == 'D')
-        {
-          return (true, label.Replace("recharge (rapide) A / V / h", "recharge : voltage (V)"));
-        }
-
-        if (variation.Location == 'F')
-        {
-          return (true, label.Replace("recharge (rapide) A / V / h", "recharge rapide : voltage (V)"));
-        }
-      }
-
-      if (variation.Schema == 53403)
-      {
-        if (variation.Location == 'D')
-        {
-          return (true, label.Replace("recharge (rapide) A / V / h", "recharge : durée (heures)"));
-        }
-
-        if (variation.Location == 'F')
-        {
-          return (true, label.Replace("recharge (rapide) A / V / h", "recharge rapide : durée (heures)"));
-        }
-      }
-
-      return (false, null);
-    }
-
-    private static (bool Success, string Result) TryComputeLabelWithComplementaryInfo(Variation variation, string label)
-    {
-      if (variation.Schema == 14103)
-      {
-        return (true, label + " : largeur");
-      }
-
-      if (variation.Schema == 14104)
-      {
-        return (true, label + " : profil");
-      }
-
-      return (false, null);
-    }
+        14103 => (label + " : largeur"),
+        14104 => (label + " : profil"),
+        _ => null
+      };
   }
 }
