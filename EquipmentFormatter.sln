@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EquipmentFormatter", "EquipmentFormatter\EquipmentFormatter.csproj", "{23011958-3B20-4498-A8C5-87B26D22E604}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "EquipmentFormatter.Fsharp", "EquipmentFormatter.Fsharp\EquipmentFormatter.Fsharp.fsproj", "{73FAA004-B033-4FE0-8B99-F604FB4442AE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{23011958-3B20-4498-A8C5-87B26D22E604}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23011958-3B20-4498-A8C5-87B26D22E604}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23011958-3B20-4498-A8C5-87B26D22E604}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73FAA004-B033-4FE0-8B99-F604FB4442AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73FAA004-B033-4FE0-8B99-F604FB4442AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73FAA004-B033-4FE0-8B99-F604FB4442AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73FAA004-B033-4FE0-8B99-F604FB4442AE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
