@@ -2,25 +2,36 @@ module EquipmentMapper
 
 open EquipmentFormatter.Fsharp.External
 
+// Modélisation du domaine par le typage des données et des fonctions
 type Operation =
     | Exchange of other: string
     | Replacement of part: string * by: string
     | Supplement of suffix: string
 
-let proceed (label: string) operation =
-    match operation with
-    | Exchange other -> other
-    | Replacement (part, by) -> label.Replace(part, by)
-    | Supplement suffix -> label + suffix
+type Label = Label of string
 
-let tryMapToExchange (variation: Variation) =
+type ComputeLabel = Equipment -> Variation -> Label
+type MapToOperation = Variation -> Operation option
+type Proceed = Label -> Operation -> Label
+
+// Implémentation
+let proceed : Proceed = fun label operation ->
+    let (Label content) = label
+    let newContent =
+        match operation with
+        | Exchange other -> other
+        | Replacement (part, by) -> content.Replace(part, by)
+        | Supplement suffix -> content + suffix
+    Label newContent
+
+let mapToExchange : MapToOperation = fun variation ->
     match variation.Schema with
     | 7407  -> Some (Exchange "Nombre de cylindres")
     | 15304 -> Some (Exchange "Puissance (ch)")
     | 15305 -> Some (Exchange "Régime de puissance maxi (tr/mn)")
     | _ -> None
 
-let tryMapToReplacementBySchema (variation: Variation) =
+let mapToReplacementBySchema : MapToOperation = fun variation ->
     match variation.Schema with
     | 23502 | 24002 -> Some (Replacement("an(s) / km", ": durée (ans)"))
     | 23503 | 24003 -> Some (Replacement("an(s) / km", ": kilométrage"))
@@ -28,7 +39,7 @@ let tryMapToReplacementBySchema (variation: Variation) =
     | 7402 -> Some (Replacement("litres / cm3", "cm3"))
     | _ -> None
 
-let tryMapToReplacementByLocation (variation: Variation) =
+let mapToReplacementByLocation : MapToOperation = fun variation ->
     match variation.Schema, variation.Location with
     | 17811, 'D' | 17818, 'D' -> Some (Replacement("conducteur / passager", "conducteur"))
     | 17811, 'P' | 17818, 'P' -> Some (Replacement("conducteur / passager", "passager"))
@@ -42,7 +53,7 @@ let tryMapToReplacementByLocation (variation: Variation) =
     | 23301, 'R' -> Some (Replacement("AV / AR", "AR"))
     | _ -> None
 
-let tryMapToSupplement (variation: Variation) =
+let mapToSupplement : MapToOperation = fun variation ->
     match variation.Schema with
     | 14103 -> Some (Supplement " : largeur")
     | 14104 -> Some (Supplement " : profil")
@@ -53,16 +64,15 @@ let (<||>) fa fb x =
     | Some v -> Some v
     | None -> fb x
 
-let mapToOperation =
-    tryMapToExchange
-    <||> tryMapToReplacementBySchema
-    <||> tryMapToReplacementByLocation
-    <||> tryMapToSupplement
+let mapToOperation : MapToOperation =
+    mapToExchange
+    <||> mapToReplacementBySchema
+    <||> mapToReplacementByLocation
+    <||> mapToSupplement
 
-let computeLabel (equipment: Equipment) (variation: Variation) =
-    let label = equipment.Label.Trim()
-
-    variation
-    |> mapToOperation
-    |> Option.map (proceed label)
-    |> (fun x -> defaultArg x label)
+let computeLabel : ComputeLabel = fun equipment variation ->
+    let label = Label (equipment.Label.Trim())
+    let result = variation |> mapToOperation |> Option.map (proceed label)
+    match result with
+    | Some x -> x
+    | None -> label
