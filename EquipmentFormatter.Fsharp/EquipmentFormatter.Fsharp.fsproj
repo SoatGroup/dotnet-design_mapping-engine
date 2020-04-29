@@ -1,12 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
-    <Compile Include="External.fs" />
-    <Compile Include="Main.fs" />
+    <Compile Include="External.EquipmentApi.fs" />
+    <Compile Include="Shared.fs" />
+    <Compile Include="Domain.Ports.fs" />
+    <Compile Include="Domain.Operation.fs" />
+    <Compile Include="Domain.Mapper.fs" />
+    <Compile Include="Api.Adapters.fs" />
+    <Compile Include="Api.Main.fs" />
   </ItemGroup>
-
 </Project>
