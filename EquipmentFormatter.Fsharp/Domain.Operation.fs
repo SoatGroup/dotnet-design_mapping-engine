@@ -1,4 +1,4 @@
-module Vehicle.Domain.Operation
+module internal Vehicle.Domain.Operation
 
 open Vehicle.Domain.Ports
 

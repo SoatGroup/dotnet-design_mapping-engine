@@ -6,7 +6,7 @@ type InsuranceFeature = Years | Mileage
 type Location = Front | Rear
 type RechargeMeasure = Amperage | Voltage | Hours
 type RechargeSpeed = Domestic | Fast
-type SeatType = Driver | Passanger
+type SeatType = Driver | Passenger
 type TyreTrait = Width | Profile
 type VolumeUnit = Liters | Cm3
 

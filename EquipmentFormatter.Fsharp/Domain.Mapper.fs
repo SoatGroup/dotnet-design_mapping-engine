@@ -14,7 +14,7 @@ let private mapLocation = function
 
 let private mapSeat = function
     | Driver -> "conducteur"
-    | Passanger -> "passager"
+    | Passenger -> "passager"
 
 let private mapRechargeSpeed = function
     | Domestic -> "recharge"

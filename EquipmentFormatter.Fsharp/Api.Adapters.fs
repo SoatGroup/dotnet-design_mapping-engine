@@ -24,7 +24,7 @@ let parseVariation (variation: Variation) =
     let parseBySchemaAndLocation () =
         match variation.Schema, variation.Location with
         | 17811, 'D' | 17818, 'D' -> Seat Driver
-        | 17811, 'P' | 17818, 'P' -> Seat Passanger
+        | 17811, 'P' | 17818, 'P' -> Seat Passenger
         | 53405, 'D' -> Recharge (Amperage, Domestic)
         | 53405, 'F' -> Recharge (Amperage, Fast)
         | 53404, 'D' -> Recharge (Voltage, Domestic)
