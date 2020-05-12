@@ -18,10 +18,8 @@ namespace EquipmentFormatter
         new Rule(Criteria.BySchema(15304), Operation.Exchange("Puissance (ch)")),
         new Rule(Criteria.BySchema(15305), Operation.Exchange("Régime de puissance maxi (tr/mn)")),
 
-        new Rule(Criteria.BySchema(23502), Operation.Replace("an(s) / km", ": durée (ans)")),
-        new Rule(Criteria.BySchema(24002), Operation.Replace("an(s) / km", ": durée (ans)")),
-        new Rule(Criteria.BySchema(23503), Operation.Replace("an(s) / km", ": kilométrage")),
-        new Rule(Criteria.BySchema(24003), Operation.Replace("an(s) / km", ": kilométrage")),
+        new Rule(Criteria.BySchemas(23502, 24002), Operation.Replace("an(s) / km", ": durée (ans)")),
+        new Rule(Criteria.BySchemas(23503, 24003), Operation.Replace("an(s) / km", ": kilométrage")),
 
         new Rule(Criteria.BySchema(7403),  Operation.Replace("litres / cm3", "litres")),
         new Rule(Criteria.BySchema(7402),  Operation.Replace("litres / cm3", "cm3")),
