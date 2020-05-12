@@ -1,103 +1,53 @@
-﻿﻿using System;
- using System.Linq;
+﻿using System.Linq;
+using EquipmentFormatter.External;
 
- namespace EquipmentFormatter
+namespace EquipmentFormatter
 {
   public static class EquipmentMapper
   {
     public static string ComputeLabel(Equipment equipment, Variation variation)
     {
       var label = equipment.Label.Trim();
-      return new Func<string>[]
-             {
-               () => TryComputeLabelTotallyNew(variation),
-               () => TryComputeLabelWithReplacementBySchema(variation, label),
-               () => TryComputeLabelWithReplacementByLocation(variation, label),
-               () => TryComputeLabelForBattery(variation, label),
-               () => TryComputeLabelWithComplementaryInfo(variation, label),
-             }
-             .Select(tryCompute => tryCompute())
-             .DefaultIfEmpty(label)
-             .First(x => x != null);
+      return ComputeLabel(variation, label);
     }
 
-    private static string TryComputeLabelTotallyNew(Variation variation) =>
-      variation.Schema switch
+    private static string ComputeLabel(Variation variation, string label) =>
+      new[]
       {
-        7407 => "Nombre de cylindres",
-        15304 => "Puissance (ch)",
-        15305 => "Régime de puissance maxi (tr/mn)",
-        _ => null,
-      };
+        new Rule(Criteria.BySchema(7407),  Operation.Exchange("Nombre de cylindres")),
+        new Rule(Criteria.BySchema(15304), Operation.Exchange("Puissance (ch)")),
+        new Rule(Criteria.BySchema(15305), Operation.Exchange("Régime de puissance maxi (tr/mn)")),
 
-    private static string TryComputeLabelWithReplacementBySchema(Variation variation, string label)
-    {
-      switch (variation.Schema)
-      {
-        case 23502:
-        case 24002:
-          return label.Replace("an(s) / km", ": durée (ans)");
-        case 23503:
-        case 24003:
-          return label.Replace("an(s) / km", ": kilométrage");
-        case 7403:
-          return label.Replace("litres / cm3", "litres");
-        case 7402:
-          return label.Replace("litres / cm3", "cm3");
-        default:
-          return null;
+        new Rule(Criteria.BySchema(23502), Operation.Replace("an(s) / km", ": durée (ans)")),
+        new Rule(Criteria.BySchema(24002), Operation.Replace("an(s) / km", ": durée (ans)")),
+        new Rule(Criteria.BySchema(23503), Operation.Replace("an(s) / km", ": kilométrage")),
+        new Rule(Criteria.BySchema(24003), Operation.Replace("an(s) / km", ": kilométrage")),
+
+        new Rule(Criteria.BySchema(7403),  Operation.Replace("litres / cm3", "litres")),
+        new Rule(Criteria.BySchema(7402),  Operation.Replace("litres / cm3", "cm3")),
+
+        new Rule(Criteria.BySchemaAndLocation(23301, 'F'), Operation.Replace("AV / AR", "AV")),
+        new Rule(Criteria.BySchemaAndLocation(23301, 'R'), Operation.Replace("AV / AR", "AR")),
+
+        new Rule(Criteria.BySchemaAndLocation(17811, 'D'), Operation.Replace("conducteur / passager", "conducteur")),
+        new Rule(Criteria.BySchemaAndLocation(17818, 'D'), Operation.Replace("conducteur / passager", "conducteur")),
+        new Rule(Criteria.BySchemaAndLocation(17811, 'P'), Operation.Replace("conducteur / passager", "passager")),
+        new Rule(Criteria.BySchemaAndLocation(17818, 'P'), Operation.Replace("conducteur / passager", "passager")),
+
+        new Rule(Criteria.BySchemaAndLocation(53405, 'F'), Operation.Replace("recharge (rapide) A / V / h", "recharge rapide : ampérage (A)")),
+        new Rule(Criteria.BySchemaAndLocation(53404, 'F'), Operation.Replace("recharge (rapide) A / V / h", "recharge rapide : voltage (V)")),
+        new Rule(Criteria.BySchemaAndLocation(53403, 'F'), Operation.Replace("recharge (rapide) A / V / h", "recharge rapide : durée (heures)")),
+        new Rule(Criteria.BySchemaAndLocation(53405, 'D'), Operation.Replace("recharge (rapide) A / V / h", "recharge : ampérage (A)")),
+        new Rule(Criteria.BySchemaAndLocation(53404, 'D'), Operation.Replace("recharge (rapide) A / V / h", "recharge : voltage (V)")),
+        new Rule(Criteria.BySchemaAndLocation(53403, 'D'), Operation.Replace("recharge (rapide) A / V / h", "recharge : durée (heures)")),
+
+        new Rule(Criteria.BySchema(14103), Operation.Supplement(" : largeur")),
+        new Rule(Criteria.BySchema(14104), Operation.Supplement(" : profil")),
       }
-    }
-
-    private static string TryComputeLabelWithReplacementByLocation(Variation variation, string label)
-    {
-      switch (variation.Schema, variation.Location)
-      {
-        case (23301, 'F'):
-          return label.Replace("AV / AR", "AV");
-        case (23301, 'R'):
-          return label.Replace("AV / AR", "AR");
-
-        case (17811, 'D'):
-        case (17818, 'D'):
-          return label.Replace("conducteur / passager", "conducteur");
-
-        case (17811, 'P'):
-        case (17818, 'P'):
-          return label.Replace("conducteur / passager", "passager");
-
-        default:
-          return null;
-      }
-    }
-
-    private static string TryComputeLabelForBattery(Variation variation, string label)
-    {
-      var result = TryGetBatteryLabel(variation);
-      if (result == null)
-      {
-        return null;
-      }
-
-      var rapide = variation.Location == 'F' ? " rapide" : "";
-      return label.Replace("recharge (rapide) A / V / h", $"recharge{rapide} : {result}");
-    }
-
-    private static string TryGetBatteryLabel(Variation variation) =>
-      variation.Schema switch
-      {
-        53405 => "ampérage (A)",
-        53404 => "voltage (V)",
-        53403 => "durée (heures)",
-        _ => null,
-      };
-
-    private static string TryComputeLabelWithComplementaryInfo(Variation variation, string label) =>
-      variation.Schema switch
-      {
-        14103 => (label + " : largeur"),
-        14104 => (label + " : profil"),
-        _ => null
-      };
+      .Where(rule => rule.IsSatisfiedBy(variation))
+      .Select(rule => rule.ApplyOn(label))
+      .Take(1)
+      .DefaultIfEmpty(label)
+      .First();
   }
 }
