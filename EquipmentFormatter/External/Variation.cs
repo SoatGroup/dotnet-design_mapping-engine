@@ -1,4 +1,4 @@
-namespace EquipmentFormatter
+namespace EquipmentFormatter.External
 {
   public class Variation
   {
