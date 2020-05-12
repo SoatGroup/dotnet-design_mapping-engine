@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
@@ -7,7 +7,7 @@
     <Compile Include="Shared.fs" />
     <Compile Include="Domain.Ports.fs" />
     <Compile Include="Domain.Operation.fs" />
-    <Compile Include="Domain.Mapper.fs" />
+    <Compile Include="Domain.Mapping.fs" />
     <Compile Include="Api.Adapters.fs" />
     <Compile Include="Api.Main.fs" />
   </ItemGroup>

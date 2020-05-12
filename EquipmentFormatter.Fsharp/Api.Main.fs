@@ -2,7 +2,7 @@ module Vehicle.Api.Main
 
 open External.EquipmentApi
 open Vehicle.Api.Adapters
-open Vehicle.Domain.Mapper
+open Vehicle.Domain.Mapping
 
 let computeLabel (equipment: Equipment) (variation: Variation) =
     let label  = parseEquipment equipment

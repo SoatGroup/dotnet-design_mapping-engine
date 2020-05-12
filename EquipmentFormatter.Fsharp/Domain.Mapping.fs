@@ -1,8 +1,8 @@
-module Vehicle.Domain.Mapper
+module Vehicle.Domain.Mapping
 
-open Vehicle.Shared
-open Vehicle.Domain.Ports
 open Vehicle.Domain.Operation
+open Vehicle.Domain.Ports
+open Vehicle.Shared
 
 let private mapInsurance = function
     | Years -> "durée (ans)"
@@ -16,14 +16,14 @@ let private mapSeat = function
     | Driver -> "conducteur"
     | Passenger -> "passager"
 
-let private mapRechargeSpeed = function
-    | Domestic -> "recharge"
-    | Fast -> "recharge rapide"
-
 let private mapRechargeMeasure = function
     | Amperage -> "ampérage (A)"
     | Voltage -> "voltage (V)"
     | Hours -> "durée (heures)"
+
+let private mapRechargeSpeed = function
+    | Domestic -> "recharge"
+    | Fast -> "recharge rapide"
 
 let private mapRecharge measure speed =
     sprintf "%s : %s" (mapRechargeSpeed speed) (mapRechargeMeasure measure)
