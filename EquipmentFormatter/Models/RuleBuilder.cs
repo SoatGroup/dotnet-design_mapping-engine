@@ -1,6 +1,6 @@
 using System;
 
-namespace EquipmentFormatter
+namespace EquipmentFormatter.Models
 {
   public class RuleBuilder
   {

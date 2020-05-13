@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using EquipmentFormatter.External;
-using static EquipmentFormatter.Criteria;
-using static EquipmentFormatter.RuleBuilder;
+using static EquipmentFormatter.Models.Criteria;
+using static EquipmentFormatter.Models.RuleBuilder;
 
 namespace EquipmentFormatter
 {

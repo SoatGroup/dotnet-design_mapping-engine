@@ -1,7 +1,7 @@
 using System;
 using EquipmentFormatter.External;
 
-namespace EquipmentFormatter
+namespace EquipmentFormatter.Models
 {
   public class Rule
   {

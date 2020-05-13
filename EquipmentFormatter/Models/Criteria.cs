@@ -2,7 +2,7 @@ using System;
 using System.Collections.Immutable;
 using EquipmentFormatter.External;
 
-namespace EquipmentFormatter
+namespace EquipmentFormatter.Models
 {
   public class Criteria
   {
