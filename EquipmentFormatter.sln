@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EquipmentFormatter", "Equip
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "EquipmentFormatter.Fsharp", "EquipmentFormatter.Fsharp\EquipmentFormatter.Fsharp.fsproj", "{73FAA004-B033-4FE0-8B99-F604FB4442AE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EquipmentFormatter.Tests", "EquipmentFormatter.Tests\EquipmentFormatter.Tests.csproj", "{70AEB5F1-1C62-415F-BB4F-46AD2ED559FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{73FAA004-B033-4FE0-8B99-F604FB4442AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73FAA004-B033-4FE0-8B99-F604FB4442AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{73FAA004-B033-4FE0-8B99-F604FB4442AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70AEB5F1-1C62-415F-BB4F-46AD2ED559FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70AEB5F1-1C62-415F-BB4F-46AD2ED559FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70AEB5F1-1C62-415F-BB4F-46AD2ED559FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70AEB5F1-1C62-415F-BB4F-46AD2ED559FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
