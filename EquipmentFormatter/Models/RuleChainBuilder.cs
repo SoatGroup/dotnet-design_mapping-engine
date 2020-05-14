@@ -1,41 +1,53 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace EquipmentFormatter.Models
 {
-  public class RuleChainBuilder
+  public static class RuleChainBuilder
   {
-    public static RuleChainBuilder Case() =>
-      new RuleChainBuilder();
+    public static TakingCriteria Case() =>
+      new TakingCriteria(ImmutableStack<Rule>.Empty);
 
-    private Criteria Criteria { get; set; }
-
-    private Stack<Rule> Rules { get; } = new Stack<Rule>();
-
-    public RuleChainBuilder When(Criteria criteria)
+    public sealed class TakingCriteria
     {
-      Criteria = criteria;
-      return this;
+      private ImmutableStack<Rule> Rules { get; }
+
+      public TakingCriteria(ImmutableStack<Rule> rules)
+      {
+        Rules = rules;
+      }
+
+      public TakingOperation When(Criteria criteria) =>
+        new TakingOperation(criteria, Rules);
+
+      public RuleChain Else(string label) =>
+        Rules.Aggregate(RuleChain.End(label), (chain, rule) => new RuleChain(rule, chain));
     }
 
-    public RuleChainBuilder ExchangeWith(string value) =>
-      Build(_ => value);
-
-    public RuleChainBuilder Replace(string part, string by) =>
-      Build(label => label.Replace(part, by));
-
-    public RuleChainBuilder Append(string value) =>
-      Build(label => label + value);
-
-    private RuleChainBuilder Build(Func<string, string> operation)
+    public sealed class TakingOperation
     {
-      Rules.Push(new Rule(Criteria, operation));
-      Criteria = null;
-      return this;
-    }
+      private Criteria Criteria { get; }
 
-    public RuleChain Else(string label) =>
-      Rules.Aggregate(RuleChain.End(label), (chain, rule) => new RuleChain(rule, chain));
+      private ImmutableStack<Rule> Rules { get; }
+
+      public TakingOperation(Criteria criteria, ImmutableStack<Rule> rules)
+      {
+        Criteria = criteria;
+        Rules    = rules;
+      }
+
+      public TakingCriteria ExchangeWith(string value) =>
+        Build(_ => value);
+
+      public TakingCriteria Replace(string part, string by) =>
+        Build(label => label.Replace(part, by));
+
+      public TakingCriteria Append(string value) =>
+        Build(label => label + value);
+
+      private TakingCriteria Build(Func<string, string> operation) =>
+        new TakingCriteria(Rules.Push(new Rule(Criteria, operation)));
+    }
   }
 }

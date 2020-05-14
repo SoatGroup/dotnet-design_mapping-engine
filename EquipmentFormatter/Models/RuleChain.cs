@@ -2,7 +2,7 @@ using EquipmentFormatter.External;
 
 namespace EquipmentFormatter.Models
 {
-  public class RuleChain
+  public sealed class RuleChain
   {
     public static RuleChain End(string label) =>
       new RuleChain(new Rule(_ => true, _ => label), null);

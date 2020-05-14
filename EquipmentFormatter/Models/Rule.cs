@@ -3,7 +3,7 @@ using EquipmentFormatter.External;
 
 namespace EquipmentFormatter.Models
 {
-  public class Rule
+  public sealed class Rule
   {
     private readonly Func<Variation, bool> isSatisfiedBy;
     private readonly Func<string, string>  applyOn;
