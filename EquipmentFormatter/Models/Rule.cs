@@ -5,18 +5,19 @@ namespace EquipmentFormatter.Models
 {
   public class Rule
   {
-    private Func<Variation, bool> Criteria { get; }
+    private readonly Func<Variation, bool> isSatisfiedBy;
+    private readonly Func<string, string>  applyOn;
 
-    private Func<string, string> Operation { get; }
-
-    public Rule(Func<Variation, bool> criteria, Func<string, string> operation)
+    public Rule(Func<Variation, bool> isSatisfiedBy, Func<string, string> applyOn)
     {
-      Criteria  = criteria;
-      Operation = operation;
+      this.isSatisfiedBy = isSatisfiedBy;
+      this.applyOn       = applyOn;
     }
 
-    public bool IsSatisfiedBy(Variation variation) => Criteria(variation);
+    public bool IsSatisfiedBy(Variation variation) =>
+      isSatisfiedBy(variation);
 
-    public string ApplyOn(string label) => Operation(label);
+    public string ApplyOn(string label) =>
+      applyOn(label);
   }
 }
