@@ -26,11 +26,11 @@ namespace EquipmentFormatter.Models
       public TakingOperation When(Criteria criteria) =>
         new TakingOperation(criteria, Rules);
 
-      public RuleChain Else(string label) =>
-        Rules.Aggregate(EndChain(label), (chain, rule) => new RuleChain(rule, chain));
+      public RuleChain Else() =>
+        Rules.Aggregate(EndChain(), (chain, rule) => new RuleChain(rule, chain));
 
-      private static RuleChain EndChain(string label) =>
-        new RuleChain(new Rule(_ => true, _ => label), null);
+      private static RuleChain EndChain() =>
+        new RuleChain(new Rule(_ => true, label => label), null);
     }
 
     public sealed class TakingOperation

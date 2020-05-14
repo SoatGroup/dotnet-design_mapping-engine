@@ -37,6 +37,6 @@ namespace EquipmentFormatter
         .When(SchemaIs(53403) & LocationIs('D')).Replace("recharge (rapide) A / V / h", by: "recharge : durée (heures)")
         .When(SchemaIs(14103)).Append(" : largeur")
         .When(SchemaIs(14104)).Append(" : profil")
-        .Else(label);
+        .Else();
   }
 }
