@@ -22,7 +22,10 @@ namespace EquipmentFormatter.Models
         new TakingOperation(criteria, Rules);
 
       public RuleChain Else(string label) =>
-        Rules.Aggregate(RuleChain.End(label), (chain, rule) => new RuleChain(rule, chain));
+        Rules.Aggregate(EndChain(label), (chain, rule) => new RuleChain(rule, chain));
+
+      private static RuleChain EndChain(string label) =>
+        new RuleChain(new Rule(_ => true, _ => label), null);
     }
 
     public sealed class TakingOperation

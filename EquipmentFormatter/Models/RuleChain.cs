@@ -4,21 +4,19 @@ namespace EquipmentFormatter.Models
 {
   public sealed class RuleChain
   {
-    public static RuleChain End(string label) =>
-      new RuleChain(new Rule(_ => true, _ => label), null);
+    private Rule Rule { get; }
 
-    private Rule Current { get; }
     private RuleChain Next { get; }
 
-    public RuleChain(Rule current, RuleChain next)
+    public RuleChain(Rule rule, RuleChain next)
     {
-      Current = current;
-      Next    = next;
+      Rule = rule;
+      Next = next;
     }
 
     public string Apply(Variation variation, string label) =>
-      Current.IsSatisfiedBy(variation)
-        ? Current.ApplyOn(label)
+      Rule.IsSatisfiedBy(variation)
+        ? Rule.ApplyOn(label)
         : Next.Apply(variation, label);
   }
 }
