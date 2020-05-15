@@ -10,7 +10,7 @@ namespace EquipmentFormatter.Models
 
     private Option<RuleChain> Next { get; }
 
-    public RuleChain(Rule rule, RuleChain next = null)
+    public RuleChain(Rule rule, RuleChain next)
     {
       Rule = rule;
       Next = Optional(next);
@@ -19,7 +19,8 @@ namespace EquipmentFormatter.Models
     public string Apply(Variation variation, string label) =>
       Rule.IsSatisfiedBy(variation)
         ? Rule.ApplyOn(label)
-        : Next.Match(Some: rule => rule.Apply(variation, label),
-                     None: () => label);
+        : Next.Match(
+            Some: rule => rule.Apply(variation, label),
+            None: () => label);
   }
 }

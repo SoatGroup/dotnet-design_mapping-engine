@@ -7,14 +7,11 @@ namespace EquipmentFormatter
 {
   public static class EquipmentMapper
   {
-    public static string ComputeLabel(Equipment equipment, Variation variation)
-    {
-      var label = equipment.Label.Trim();
-      var ruleChain = RuleChainEndingWith(label);
-      return ruleChain.Apply(variation, label);
-    }
+    public static string ComputeLabel(Equipment equipment, Variation variation) =>
+      BuildRuleChain()
+        .Apply(variation, equipment.Label.Trim());
 
-    private static RuleChain RuleChainEndingWith(string label) =>
+    private static RuleChain BuildRuleChain() =>
       Case()
         .When(SchemaIs(7407)).ExchangeWith("Nombre de cylindres")
         .When(SchemaIs(15304)).ExchangeWith("Puissance (ch)")
@@ -37,6 +34,6 @@ namespace EquipmentFormatter
         .When(SchemaIs(53403) & LocationIs('D')).Replace("recharge (rapide) A / V / h", by: "recharge : durée (heures)")
         .When(SchemaIs(14103)).Append(" : largeur")
         .When(SchemaIs(14104)).Append(" : profil")
-        .Else();
+        .Else(label => label);
   }
 }
