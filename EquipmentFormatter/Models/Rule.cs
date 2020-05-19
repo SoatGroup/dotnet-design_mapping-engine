@@ -3,8 +3,11 @@ using EquipmentFormatter.External;
 
 namespace EquipmentFormatter.Models
 {
-  public sealed class Rule
+  public sealed class Rule : IOperation
   {
+    public static Rule Default(Func<string, string> operation) =>
+      new Rule(_ => true, operation);
+
     private readonly Func<Variation, bool> isSatisfiedBy;
     private readonly Func<string, string>  applyOn;
 

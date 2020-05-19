@@ -16,11 +16,11 @@ namespace EquipmentFormatter.Models
       Next = Optional(next);
     }
 
-    public string Apply(Variation variation, string label) =>
+    public IOperation SelectOperationAdaptedTo(Variation variation) =>
       Rule.IsSatisfiedBy(variation)
-        ? Rule.ApplyOn(label)
+        ? (IOperation) Rule
         : Next.Match(
-            Some: rule => rule.Apply(variation, label),
-            None: () => label);
+            Some: chain => chain.SelectOperationAdaptedTo(variation),
+            None: () => Rule.Default(label => label));
   }
 }

@@ -32,7 +32,7 @@ namespace EquipmentFormatter.Models
           (chain, rule) => new RuleChain(rule, chain));
 
       private static RuleChain EndRuleChainWith(Func<string, string> operation) =>
-        new RuleChain(new Rule(_ => true, operation), null);
+        new RuleChain(Rule.Default(operation), null);
     }
 
     public sealed class TakingOperation

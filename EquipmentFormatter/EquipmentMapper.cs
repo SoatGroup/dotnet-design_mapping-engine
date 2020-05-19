@@ -8,10 +8,11 @@ namespace EquipmentFormatter
   public static class EquipmentMapper
   {
     public static string ComputeLabel(Equipment equipment, Variation variation) =>
-      BuildRuleChain()
-        .Apply(variation, equipment.Label.Trim());
+      BuildRules()
+        .SelectOperationAdaptedTo(variation)
+        .ApplyOn(equipment.Label.Trim());
 
-    private static RuleChain BuildRuleChain() =>
+    private static RuleChain BuildRules() =>
       Case()
         .When(SchemaIs(7407)).ExchangeWith("Nombre de cylindres")
         .When(SchemaIs(15304)).ExchangeWith("Puissance (ch)")
