@@ -14,11 +14,9 @@ namespace EquipmentFormatter.Models
       this.rules = rules.ToImmutableList();
     }
 
-    public string Apply(Variation variation, string label) =>
+    public IOperation SelectOperationAdaptedTo(Variation variation) =>
       rules.Where(rule => rule.IsSatisfiedBy(variation))
-           .Select(rule => rule.ApplyOn(label))
-           .Take(1)
-           .DefaultIfEmpty(label)
+           .DefaultIfEmpty(new Rule(_ => true, label => label))
            .First();
   }
 }

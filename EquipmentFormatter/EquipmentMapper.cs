@@ -9,7 +9,8 @@ namespace EquipmentFormatter
   {
     public static string ComputeLabel(Equipment equipment, Variation variation) =>
       BuildRules()
-        .Apply(variation, equipment.Label.Trim());
+        .SelectOperationAdaptedTo(variation)
+        .ApplyOn(equipment.Label.Trim());
 
     private static Rules BuildRules() =>
       new Rules(

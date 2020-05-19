@@ -3,7 +3,7 @@ using EquipmentFormatter.External;
 
 namespace EquipmentFormatter.Models
 {
-  public class Rule
+  public class Rule : IOperation
   {
     private Func<Variation, bool> Criteria { get; }
 
