@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using EquipmentFormatter.External;
+﻿using EquipmentFormatter.External;
+using EquipmentFormatter.Models;
 using static EquipmentFormatter.Models.Criteria;
 using static EquipmentFormatter.Models.RuleBuilder;
 
@@ -7,15 +7,12 @@ namespace EquipmentFormatter
 {
   public static class EquipmentMapper
   {
-    public static string ComputeLabel(Equipment equipment, Variation variation)
-    {
-      var label = equipment.Label.Trim();
-      return ComputeLabel(variation, label);
-    }
+    public static string ComputeLabel(Equipment equipment, Variation variation) =>
+      BuildRules()
+        .Apply(variation, equipment.Label.Trim());
 
-    private static string ComputeLabel(Variation variation, string label) =>
-      new[]
-      {
+    private static Rules BuildRules() =>
+      new Rules(
         When(SchemaIs(7407)).ExchangeWith("Nombre de cylindres"),
         When(SchemaIs(15304)).ExchangeWith("Puissance (ch)"),
         When(SchemaIs(15305)).ExchangeWith("Régime de puissance maxi (tr/mn)"),
@@ -42,12 +39,7 @@ namespace EquipmentFormatter
         When(SchemaIs(53403) & LocationIs('D')).Replace("recharge (rapide) A / V / h", by: "recharge : durée (heures)"),
 
         When(SchemaIs(14103)).Append(" : largeur"),
-        When(SchemaIs(14104)).Append(" : profil"),
-      }
-      .Where(rule => rule.IsSatisfiedBy(variation))
-      .Select(rule => rule.ApplyOn(label))
-      .Take(1)
-      .DefaultIfEmpty(label)
-      .First();
+        When(SchemaIs(14104)).Append(" : profil")
+      );
   }
 }
