@@ -1,7 +1,7 @@
 namespace EquipmentFormatter.Models
 {
-  public interface IOperation
+  public interface IOperation<TData>
   {
-    string ApplyOn(string label);
+    TData ApplyOn(TData data);
   }
 }

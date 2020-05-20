@@ -1,26 +1,25 @@
-using EquipmentFormatter.External;
 using LanguageExt;
 using static LanguageExt.Prelude;
 
 namespace EquipmentFormatter.Models
 {
-  public sealed class RuleChain
+  public sealed class RuleChain<TCriteria, TData>
   {
-    private Rule Rule { get; }
+    private Rule<TCriteria, TData> Rule { get; }
 
-    private Option<RuleChain> Next { get; }
+    private Option<RuleChain<TCriteria, TData>> Next { get; }
 
-    public RuleChain(Rule rule, RuleChain next)
+    public RuleChain(Rule<TCriteria, TData> rule, RuleChain<TCriteria, TData> next)
     {
       Rule = rule;
       Next = Optional(next);
     }
 
-    public IOperation SelectOperationAdaptedTo(Variation variation) =>
-      Rule.IsSatisfiedBy(variation)
-        ? (IOperation) Rule
+    public IOperation<TData> SelectOperationAdaptedTo(TCriteria criteria) =>
+      Rule.IsSatisfiedBy(criteria)
+        ? (IOperation<TData>) Rule
         : Next.Match(
-            Some: chain => chain.SelectOperationAdaptedTo(variation),
-            None: () => Rule.Default(label => label));
+            Some: chain => chain.SelectOperationAdaptedTo(criteria),
+            None: () => Rule<TCriteria, TData>.Default(label => label));
   }
 }

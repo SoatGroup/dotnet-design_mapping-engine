@@ -1,26 +1,25 @@
 using System;
-using EquipmentFormatter.External;
 
 namespace EquipmentFormatter.Models
 {
-  public sealed class Rule : IOperation
+  public class Rule<TCriteria, TData> : IOperation<TData>
   {
-    public static Rule Default(Func<string, string> operation) =>
-      new Rule(_ => true, operation);
+    public static Rule<TCriteria, TData> Default(Func<TData, TData> operation) =>
+      new Rule<TCriteria, TData>(_ => true, operation);
 
-    private readonly Func<Variation, bool> isSatisfiedBy;
-    private readonly Func<string, string>  applyOn;
+    private readonly Func<TCriteria, bool> isSatisfiedBy;
+    private readonly Func<TData, TData>  applyOn;
 
-    public Rule(Func<Variation, bool> isSatisfiedBy, Func<string, string> applyOn)
+    public Rule(Func<TCriteria, bool> isSatisfiedBy, Func<TData, TData> applyOn)
     {
       this.isSatisfiedBy = isSatisfiedBy;
       this.applyOn       = applyOn;
     }
 
-    public bool IsSatisfiedBy(Variation variation) =>
-      isSatisfiedBy(variation);
+    public bool IsSatisfiedBy(TCriteria criteria) =>
+      isSatisfiedBy(criteria);
 
-    public string ApplyOn(string label) =>
-      applyOn(label);
+    public TData ApplyOn(TData data) =>
+      applyOn(data);
   }
 }
