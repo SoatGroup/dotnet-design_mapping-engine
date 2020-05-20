@@ -6,8 +6,8 @@ namespace EquipmentFormatter.Models
 {
   public static class RuleChainBuilder
   {
-    public static RuleChainBuilder<TCriteria, TData>.ITakingCriteria Given<TCriteria, TData>() =>
-      new RuleChainBuilder<TCriteria, TData>.TakingCriteriaOrEnding(ImmutableStack<Rule<TCriteria, TData>>.Empty);
+    public static RuleChainBuilder<TCriteria, TData>.ITakingCriteria Given<TCriteria, TData>(TCriteria criteria, TData data) =>
+      new RuleChainBuilder<TCriteria, TData>.TakingCriteriaOrEnding(criteria, data, ImmutableStack<Rule<TCriteria, TData>>.Empty);
   }
 
   public static class RuleChainBuilder<TCriteria, TData>
@@ -19,20 +19,25 @@ namespace EquipmentFormatter.Models
 
     public sealed class TakingCriteriaOrEnding : ITakingCriteria
     {
+      private TCriteria Criteria { get; }
+      private TData Data { get; }
       private ImmutableStack<Rule<TCriteria, TData>> Rules { get; }
 
-      public TakingCriteriaOrEnding(ImmutableStack<Rule<TCriteria, TData>> rules)
+      public TakingCriteriaOrEnding(TCriteria criteria, TData data, ImmutableStack<Rule<TCriteria, TData>> rules)
       {
-        Rules = rules;
+        Criteria = criteria;
+        Data     = data;
+        Rules    = rules;
       }
 
       public TakingOperation When(Condition<TCriteria> condition) =>
-        new TakingOperation(condition, Rules);
+        new TakingOperation(condition, Criteria, Data, Rules);
 
-      public RuleChain<TCriteria, TData> Else(Func<TData, TData> operation) =>
-        Rules.Aggregate(
-          seed: EndRuleChainWith(operation),
-          (chain, rule) => new RuleChain<TCriteria, TData>(rule, chain));
+      public TData Else(Func<TData, TData> operation) =>
+        Rules.Aggregate(seed: EndRuleChainWith(operation),
+                        (chain, rule) => new RuleChain<TCriteria, TData>(rule, chain))
+             .SelectOperationAdaptedTo(Criteria)
+             .ApplyOn(Data);
 
       private static RuleChain<TCriteria, TData> EndRuleChainWith(Func<TData, TData> operation) =>
         new RuleChain<TCriteria, TData>(Rule<TCriteria, TData>.Default(operation), null);
@@ -41,17 +46,20 @@ namespace EquipmentFormatter.Models
     public sealed class TakingOperation
     {
       private Condition<TCriteria> Condition { get; }
-
+      private TCriteria Criteria { get; }
+      private TData Data { get; }
       private ImmutableStack<Rule<TCriteria, TData>> Rules { get; }
 
-      public TakingOperation(Condition<TCriteria> condition, ImmutableStack<Rule<TCriteria, TData>> rules)
+      public TakingOperation(Condition<TCriteria> condition, TCriteria criteria, TData data, ImmutableStack<Rule<TCriteria, TData>> rules)
       {
         Condition = condition;
+        Criteria  = criteria;
+        Data      = data;
         Rules     = rules;
       }
 
       public TakingCriteriaOrEnding Then(Func<TData, TData> operation) =>
-        new TakingCriteriaOrEnding(Rules.Push(new Rule<TCriteria, TData>(Condition, operation)));
+        new TakingCriteriaOrEnding(Criteria, Data, Rules.Push(new Rule<TCriteria, TData>(Condition, operation)));
     }
   }
 }

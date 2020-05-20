@@ -8,8 +8,8 @@ namespace EquipmentFormatter
 {
   public static class EquipmentMapper
   {
-    private static readonly RuleChain<Variation, string> Rules =
-      Given<Variation, string>()
+    public static string ComputeLabel(Equipment equipment, Variation variation) =>
+      Given(criteria: variation, data: equipment.Label.Trim())
         .When(SchemaIs(7407)).Then(ExchangeWith("Nombre de cylindres"))
         .When(SchemaIs(15304)).Then(ExchangeWith("Puissance (ch)"))
         .When(SchemaIs(15305)).Then(ExchangeWith("Régime de puissance maxi (tr/mn)"))
@@ -32,9 +32,5 @@ namespace EquipmentFormatter
         .When(SchemaIs(14103)).Then(Append(" : largeur"))
         .When(SchemaIs(14104)).Then(Append(" : profil"))
         .Else(label => label);
-
-    public static string ComputeLabel(Equipment equipment, Variation variation) =>
-      Rules.SelectOperationAdaptedTo(variation)
-           .ApplyOn(equipment.Label.Trim());
   }
 }
