@@ -6,22 +6,22 @@ namespace EquipmentFormatter.Models
 {
   public static class RuleChainBuilder
   {
-    public static RuleChainBuilder<TCriteria, TData>.ITakingCriteria Given<TCriteria, TData>() =>
-      new RuleChainBuilder<TCriteria, TData>.TakingCriteriaOrEnding(ImmutableStack<Rule<TCriteria, TData>>.Empty);
+    public static RuleChainBuilder<TCriteria, TData>.ITakingCondition Given<TCriteria, TData>() =>
+      new RuleChainBuilder<TCriteria, TData>.TakingConditionOrEnding(ImmutableStack<Rule<TCriteria, TData>>.Empty);
   }
 
   public static class RuleChainBuilder<TCriteria, TData>
   {
-    public interface ITakingCriteria
+    public interface ITakingCondition
     {
       TakingOperation When(Condition<TCriteria> condition);
     }
 
-    public sealed class TakingCriteriaOrEnding : ITakingCriteria
+    public sealed class TakingConditionOrEnding : ITakingCondition
     {
       private ImmutableStack<Rule<TCriteria, TData>> Rules { get; }
 
-      public TakingCriteriaOrEnding(ImmutableStack<Rule<TCriteria, TData>> rules)
+      public TakingConditionOrEnding(ImmutableStack<Rule<TCriteria, TData>> rules)
       {
         Rules = rules;
       }
@@ -50,8 +50,8 @@ namespace EquipmentFormatter.Models
         Rules     = rules;
       }
 
-      public TakingCriteriaOrEnding Then(Func<TData, TData> operation) =>
-        new TakingCriteriaOrEnding(Rules.Push(new Rule<TCriteria, TData>(Condition, operation)));
+      public TakingConditionOrEnding Then(Func<TData, TData> operation) =>
+        new TakingConditionOrEnding(Rules.Push(new Rule<TCriteria, TData>(Condition, operation)));
     }
   }
 }
