@@ -1,6 +1,6 @@
 using System;
 
-namespace EquipmentFormatter.Models
+namespace EquipmentFormatter.Rules
 {
   public class Condition<TCriteria>
   {

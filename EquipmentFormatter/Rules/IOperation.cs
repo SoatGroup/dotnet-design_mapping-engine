@@ -1,4 +1,4 @@
-namespace EquipmentFormatter.Models
+namespace EquipmentFormatter.Rules
 {
   public interface IOperation<TData>
   {

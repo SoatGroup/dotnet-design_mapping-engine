@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Immutable;
 using EquipmentFormatter.External;
-using EquipmentFormatter.Models;
+using EquipmentFormatter.Rules;
 
 namespace EquipmentFormatter
 {

@@ -1,7 +1,6 @@
 ﻿using EquipmentFormatter.External;
-using EquipmentFormatter.Models;
 using static EquipmentFormatter.LabelOperation;
-using static EquipmentFormatter.Models.RuleChainBuilder;
+using static EquipmentFormatter.Rules.RuleChainBuilder;
 using static EquipmentFormatter.VariationCondition;
 
 namespace EquipmentFormatter

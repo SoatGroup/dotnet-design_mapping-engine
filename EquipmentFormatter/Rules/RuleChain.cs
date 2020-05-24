@@ -1,7 +1,7 @@
 using LanguageExt;
 using static LanguageExt.Prelude;
 
-namespace EquipmentFormatter.Models
+namespace EquipmentFormatter.Rules
 {
   public sealed class RuleChain<TCriteria, TData>
   {
